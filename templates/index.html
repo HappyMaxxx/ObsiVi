@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Obsidian Graph</title>
+    <script src="http://127.0.0.1:5000/libs/vis-network.min.js"></script>
+
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #1E1E1E;
+        }
+        #mynetwork {
+            width: 100vw;
+            height: 100vh;
+        }
+    </style>
+</head>
+<body>
+    <div id="mynetwork"></div>
+
+    <script>
+        async function fetchGraph() {
+            let response = await fetch("http://localhost:5000/graph");
+            let data = await response.json();
+            return data;
+        }
+
+        async function drawGraph() {
+            let graph = await fetchGraph();
+            let container = document.getElementById("mynetwork");
+
+            let edges = new vis.DataSet(graph.edges);
+            let nodes = new vis.DataSet(graph.nodes);
+
+            let options = {
+                nodes: {
+                    shape: "dot",
+                    size: 10,
+                    font: { color: "#FFFFFF" },
+                    color: {
+                        border: "#ABA8B3",
+                        background: "#ABA8B3",
+                        highlight: { border: "#A200E8", background: "#A200E8" },
+                        hover: { border: "#A200E8", background: "#A200E8" }
+                    }
+                },
+                edges: {
+                    color: "#ABA8B3",
+                    width: 1.5,
+                    /* smooth: { type: "continuous" }, */
+                    smooth: false,
+                    hoverWidth: 0
+                },
+                physics: { stabilization: false },
+                interaction: { hover: true }
+            };
+
+            let network = new vis.Network(container, { nodes: nodes, edges: edges }, options);
+
+            network.on("hoverNode", function (params) {
+                let nodeId = params.node;
+                let connectedEdges = network.getConnectedEdges(nodeId);
+
+                connectedEdges.forEach(edgeId => {
+                    edges.update({ id: edgeId, color: "#A200E8" });
+                });
+            });
+
+            network.on("blurNode", function (params) {
+                let allEdges = edges.get();
+                allEdges.forEach(edge => {
+                    edges.update({ id: edge.id, color: "#ABA8B3" });
+                });
+            });
+
+            network.on("doubleClick", function (params) {
+                if (params.nodes.length > 0) {
+                    let note = params.nodes[0];
+                    window.location.href = `obsidian://open?vault=Obsidian%20Vault&file=${encodeURIComponent(note)}`;
+                }
+            });
+        }
+
+        drawGraph();
+    </script>
+    <script>
+        if (performance.navigation.type === 1) {
+            window.location.href = "/";
+        }
+    </script>    
+</body>
+</html>

@@ -2,7 +2,9 @@ import os
 import re
 import json
 
-VAULT_PATH = os.path.expanduser("~/Documents/Obsidian Vault")
+from conf import OVP
+
+VAULT_PATH = OVP
 
 def parse_markdown_links(content):
     return re.findall(r'\[\[([^\]]+)\]\]', content)
@@ -22,11 +24,10 @@ def build_graph(vault_path):
             links = parse_markdown_links(content)
             nodes[note_name] = links
 
-    # Створюємо JSON-граф
     for node in nodes:
         graph["nodes"].append({"id": node, "label": node})
         for link in nodes[node]:
-            if link in nodes:  # Додаємо лише якщо файл існує
+            if link in nodes: 
                 graph["edges"].append({"from": node, "to": link})
 
     return graph

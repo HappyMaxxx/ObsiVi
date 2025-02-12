@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Obsidian Graph</title>
-    <script src="http://127.0.0.1:5000/libs/vis-network.min.js"></script>
+    <script src="http://127.0.0.1:5001/libs/vis-network.min.js"></script>
 
     <style>
         body {
@@ -23,7 +23,7 @@
 
     <script>
         async function fetchGraph() {
-            let response = await fetch("http://localhost:5000/graph");
+            let response = await fetch("http://localhost:5001/graph");
             let data = await response.json();
             return data;
         }
@@ -50,7 +50,6 @@
                 edges: {
                     color: "#ABA8B3",
                     width: 1.5,
-                    /* smooth: { type: "continuous" }, */
                     smooth: false,
                     hoverWidth: 0
                 },
@@ -63,16 +62,38 @@
             network.on("hoverNode", function (params) {
                 let nodeId = params.node;
                 let connectedEdges = network.getConnectedEdges(nodeId);
+                let allNodes = nodes.get();
+                let allEdges = edges.get();
 
-                connectedEdges.forEach(edgeId => {
-                    edges.update({ id: edgeId, color: "#A200E8" });
+                let connectedNodes = network.getConnectedNodes(nodeId);
+
+                allNodes.forEach(node => {
+                    if (node.id !== nodeId && !connectedNodes.includes(node.id)) {
+                        nodes.update({ id: node.id, color: { border: "#555", background: "#3A393C" } });
+                    } else {
+                        nodes.update({ id: node.id, color: { border: "#ABA8B3", background: "#ABA8B3" } });
+                    }
+                });
+
+                allEdges.forEach(edge => {
+                    if (connectedEdges.includes(edge.id)) {
+                        edges.update({ id: edge.id, color: "#A200E8" });
+                    } else {
+                        edges.update({ id: edge.id, color: "#3A393C" }); 
+                    }
                 });
             });
 
-            network.on("blurNode", function (params) {
+            network.on("blurNode", function () {
                 let allEdges = edges.get();
+                let allNodes = nodes.get();
+
                 allEdges.forEach(edge => {
                     edges.update({ id: edge.id, color: "#ABA8B3" });
+                });
+
+                allNodes.forEach(node => {
+                    nodes.update({ id: node.id, color: { border: "#ABA8B3", background: "#ABA8B3" } });
                 });
             });
 

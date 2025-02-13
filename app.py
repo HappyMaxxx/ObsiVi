@@ -5,6 +5,8 @@ import json
 import time
 from main import main
 
+from conf import SD
+
 app = Flask(__name__)
 CORS(app)
 
@@ -29,4 +31,8 @@ def serve_libs(filename):
     return send_from_directory("libs", filename)
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5001)
+    try:
+        app.run(debug=True, port=5001)
+    except OSError:
+        with open(os.path.join(SD, "flask.log"), "r") as f:
+            f.write(f"Error: port 5001 is alredy in use\n")

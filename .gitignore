@@ -1,2 +1,5 @@
 graph.json
 conf.py
+venv
+flask.log
+widget.log

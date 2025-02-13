@@ -223,7 +223,7 @@ Type=forking
 User=$USER
 WorkingDirectory=$SCRIPT_DIR
 ExecStart=$SCRIPT_DIR/run.sh
-Environment="DISPLAY=:$DISPLAY"
+Environment="DISPLAY=$DISPLAY"
 Environment="XAUTHORITY=$HOME/.Xauthority"
 Restart=always
 RestartSec=5s
@@ -249,13 +249,13 @@ EOL
 handle_arguments "$@"
 
 check_python
-# create_virtualenv
-# install_pip_packages
-# check_vis
-# check_obsidian
-# check_obsi_path
-# create_conf
-# setup_autostart
+create_virtualenv
+install_pip_packages
+check_vis
+check_obsidian
+check_obsi_path
+create_conf
+setup_autostart
 
 cd "$SCRIPT_DIR"
 if ./run.sh; then

@@ -111,6 +111,18 @@
         if (performance.navigation.type === 1) {
             window.location.href = "/";
         }
-    </script>    
+    </script>   
+    <script>
+        function checkForUpdates() {
+            fetch('/graph')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === "updated") {
+                        location.reload();
+                    }
+                });
+        }
+        setInterval(checkForUpdates, 5000);
+    </script>     
 </body>
 </html>

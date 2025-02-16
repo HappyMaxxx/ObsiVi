@@ -186,6 +186,16 @@ fill_conf() {
         exit 1
     fi
 
+    if ! echo "width = 400" >> "$SCRIPT_DIR/conf.py"; then
+        echo -e "${RED}Error: Failed to write to configuration file! (w)${NC}"
+        exit 1
+    fi
+
+    if ! echo "height = 300" >> "$SCRIPT_DIR/conf.py"; then
+        echo -e "${RED}Error: Failed to write to configuration file! (h)${NC}"
+        exit 1
+    fi
+
     echo -e "${GREEN}Configuration file created successfully.${NC}"
 }
 
